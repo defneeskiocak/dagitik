@@ -3,6 +3,21 @@ def anahtarAlfabe(s):
     anahtar = ['']*24
     for n in range(0, 24):
         anahtar[((n+s-1) % 24)] = alfabe[n]
-    print (anahtar)
+    dictAnahtar = dict(zip(alfabe, anahtar))
+    #print (dictAnahtar)
+    return dictAnahtar
 
-anahtarAlfabe(7)
+s = raw_input("anahtar alfabe olusturmak icin s parametresi girin\ns: ");
+key = anahtarAlfabe(int(s))
+
+f = open("metin.txt", "r")
+metin = f.read()
+print (metin)
+crypted = key[metin[0]]
+for n in range(1, len(metin)):
+    if metin[n] in key:
+        crypted += key[metin[n]]
+    else:
+        crypted += metin[n]
+print (crypted)
+f.close()
