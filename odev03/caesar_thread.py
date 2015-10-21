@@ -13,11 +13,19 @@ key = anahtarAlfabe(int(s))
 f = open("metin.txt", "r")
 metin = f.read()
 print (metin)
-crypted = key[metin[0]]
+metin = metin.lower()
+crypted = ''
+str = ''
+str = key[metin[0]]
+crypted = str.upper()
 for n in range(1, len(metin)):
     if metin[n] in key:
-        crypted += key[metin[n]]
+        str = key[metin[n]]
+        crypted += str.upper()
     else:
-        crypted += metin[n]
+        crypted += metin[n].upper()
 print (crypted)
 f.close()
+fC = open("crypted.txt", "w")
+fC.write(crypted)
+fC.close()
