@@ -6,7 +6,7 @@ import time
 exitFlag = 0
 
 
-class MyThread (threading.Thread):
+class myThread (threading.Thread):
     def __init__(self, threadID, name, q):
         threading.Thread.__init__(self)
         self.threadID = threadID
@@ -31,7 +31,7 @@ def process_data(threadName, q):
         time.sleep(1)
 
 threadList = []
-nameList = ["One", "Two", "Three", "Four", "Five"]
+nameList = []
 queueLock = threading.Lock()
 workQueue = Queue.Queue(10)
 threads = []
@@ -57,10 +57,38 @@ for x in range(0, n):
 
 print (threadList)
 
+# Create new threads
+for tName in threadList:
+    thread = myThread(threadID, tName, workQueue)
+    thread.start()
+    threads.append(thread)
+    threadID += 1
+
+# Fill the queue
+queueLock.acquire()
+for word in nameList:
+    workQueue.put(word)
+queueLock.release()
+
+# Wait for queue to empty
+while not workQueue.empty():
+    pass
+
 f = open("metin.txt", "r")
 metin = f.read()
 print (metin)
 metin = metin.lower()
+
+step = l
+start = 0
+end = l
+for n in range(0, len(metin)/step):
+    nameList.append(metin[start:end])
+    start += step
+    end += step
+
+print (nameList)
+
 crypted = ''
 str = ''
 str = key[metin[0]]
@@ -76,3 +104,11 @@ f.close()
 fC = open("crypted.txt", "w")
 fC.write(crypted)
 fC.close()
+
+# Notify threads it's time to exit
+exitFlag = 1
+
+# Wait for all threads to complete
+for t in threads:
+    t.join()
+print "Exiting Main Thread"
