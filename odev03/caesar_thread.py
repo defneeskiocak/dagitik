@@ -95,7 +95,9 @@ for n in range(1, len(metin)):
         crypted += metin[n].upper()
 
 f.close()
-fC = open("crypted.txt", "w")
+
+filename = "crypted_"+str(s)+"_"+str(n)+"_"+str(l)+".txt"
+fC = open(filename, "w")
 fC.write(crypted)
 fC.close()
 
