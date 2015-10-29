@@ -10,13 +10,13 @@ while 1:
     data = s.recv(1024)
     if ( data == 'Bitir'):
         s.close()
-        break;
+        break
     else:
         print "GELEN MESAJ:" , data
         data = raw_input ( "GONDER (Cikmak icin Bitir yazin): " )
-        if (data <> 'Bitir'):
+        if (data != 'Bitir'):
             s.send(data)
         else:
             s.send(data)
             s.close()
-            break;
+            break
