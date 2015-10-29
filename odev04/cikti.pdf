@@ -1,0 +1,19 @@
+message_server:
+
+Soket olusturuldu
+Soket bind basarili
+Soket dinlemede
+Baglanildi 127.0.0.1:59457
+
+message_client:
+
+GELEN MESAJ: Baglandiginiz icin tesekkurler!
+
+GONDER (Cikmak icin Bitir yazin): merhaba
+GELEN MESAJ: Thu Oct 29 21:45:33 2015
+Peki 127.0.0.1
+GONDER (Cikmak icin Bitir yazin): kimse var mı
+GELEN MESAJ: Peki 127.0.0.1
+GONDER (Cikmak icin Bitir yazin): saat kaçtı ki
+GELEN MESAJ: Peki 127.0.0.1
+GONDER (Cikmak icin Bitir yazin): Bitir
