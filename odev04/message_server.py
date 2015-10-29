@@ -1,3 +1,4 @@
+import random
 import socket
 import time
 import sys
@@ -22,11 +23,13 @@ print "Soket dinlemede"
 
 def clientThread(conn):
     conn.send("Baglandiginiz icin tesekkurler!\n")
-    currentTime = time.ctime(time.time()) + "\r\n"
-    conn.send(currentTime.encode('ascii'))
     while True:
         data = conn.recv(1024)
-        reply = "OK..." + data
+        reply = "Peki " + addr[0]
+        flag = int(random.uniform(0,20))
+        if flag == 9:
+            currentTime = time.ctime(time.time()) + "\r\n"
+            conn.send(currentTime.encode('ascii'))
         if not data:
             break
         conn.sendall(reply)
