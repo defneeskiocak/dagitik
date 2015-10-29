@@ -26,7 +26,7 @@ def clientThread(conn):
     while True:
         data = conn.recv(1024)
         reply = "Peki " + addr[0]
-        flag = int(random.uniform(0,20))
+        flag = int(random.uniform(7, 10))
         if flag == 9:
             currentTime = time.ctime(time.time()) + "\r\n"
             conn.send(currentTime.encode('ascii'))
@@ -38,6 +38,9 @@ def clientThread(conn):
 while 1:
     conn, addr = s.accept()
     print "Baglanildi " + addr[0] + ":" + str(addr[1])
-    start_new_thread(clientThread ,(conn,))
+    try:
+        start_new_thread(clientThread ,(conn,))
+    except:
+        sys.exit()
 
 s.close()
