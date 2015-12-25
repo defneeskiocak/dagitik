@@ -1,5 +1,3 @@
-__author__ = 'serhan'
-
 from pyGraphics_ui import Ui_ImageProcessor
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -72,6 +70,15 @@ class WorkerThread (threading.Thread):
                 #     newMessage[index0] = 0
         return (header, newMessage)
 
+    def binarizeFilter(self, header, patch):
+        newMessage = [0] * self.patchsize * self.patchsize
+        for i in range(0,self.patchsize * self.patchsize):
+            if patch[i]>127:
+                newMessage[i]=255
+            else:
+                newMessage[i]=0
+        return (header, newMessage)
+
 
     def run(self):
         print self.name + ": Starting."
@@ -89,6 +96,8 @@ class WorkerThread (threading.Thread):
                                                   128)
                 if str(message[0][0]) == "GrayScale":
                     outMessage = self.convertGray(message[0][1], message[1])
+                if str(message[0][0]) == "BinarizeFilter":
+                    outMessage = self.binarizeFilter(message[0][1], message[1])
                 # self.pLock.acquire()
                 self.outQueue.put(outMessage)
                 # self.pLock.release()
@@ -115,6 +124,7 @@ class imGui(QMainWindow):
         # fill combobox
         self.ui.boxFunction.addItem("GrayScale")
         self.ui.boxFunction.addItem("SobelFilter")
+        self.ui.boxFunction.addItem("BinarizeFilter")
 
         # connect buttons
         self.ui.buttonLoadImage.clicked.connect(self.loadImagePressed)
