@@ -151,6 +151,46 @@ class WorkerThread (threading.Thread):
                 #     newMessage[index0] = 0
         return (header, newMessage)
 
+    def gaussianFilter(self, header, patch):
+        # convolve the patch with the matrix
+        # [[0.0625,0.125,0.0625],[0.125,0.25,0.125],[0.0625,0.125,0.0625]]
+        # read how the convolution is applied in discrete domain
+        newMessage = [0] * self.patchsize * self.patchsize
+        for i in range(1, self.patchsize-1):
+            for j in range(1, self.patchsize-1):
+                index0 = j * self.patchsize + i # top line index
+                index1 = (j+1) * self.patchsize + i # same line index
+                index1r = (j-1) * self.patchsize + i # bottom line index
+                temp0 = \
+                    + 0.0625* patch[index1r - 1] \
+                    + 0.0125* patch[index1r] \
+                    + 0.0625* patch[index1r + 1] \
+                    + 0.125* patch[index0 - 1] \
+                    + 0.25* patch[index0] \
+                    + 0.125* patch[index0 + 1] \
+                    + 0.0625* patch[index1 - 1] \
+                    + 0.125* patch[index1] \
+                    + 0.0625* patch[index1 + 1]
+
+                temp1 = \
+                    + 0.0625* patch[index1r - 1] \
+                    + 0.125* patch[index1r]\
+                    + 0.0625* patch[index1r + 1] \
+                    + 0.125* patch[index0 - 1] \
+                    + 0.25* patch[index0]\
+                    + 0.125* patch[index0 + 1] \
+                    + 0.0625* patch[index1 - 1] \
+                    + 0.125* patch[index1]\
+                    + 0.0625* patch[index1 + 1]
+
+                newMessage[index0] = int(math.sqrt(temp0**2 + temp1**2))
+                # apply the threshold parameter
+                # if newMessage[index0] > threshold:
+                #     newMessage[index0] = 255
+                # else:
+                #     newMessage[index0] = 0
+        return (header, newMessage)
+
 
     def run(self):
         print self.name + ": Starting."
@@ -174,6 +214,8 @@ class WorkerThread (threading.Thread):
                     outMessage = self.prewittFilter(message[0][1], message[1])
                 if str(message[0][0]) == "RobertsFilter":
                     outMessage = self.robertsCrossFilter(message[0][1], message[1])
+                if str(message[0][0]) == "GaussianFilter":
+                    outMessage = self.gaussianFilter(message[0][1], message[1])
                 # self.pLock.acquire()
                 self.outQueue.put(outMessage)
                 # self.pLock.release()
@@ -203,6 +245,7 @@ class imGui(QMainWindow):
         self.ui.boxFunction.addItem("BinarizeFilter")
         self.ui.boxFunction.addItem("PrewittFilter")
         self.ui.boxFunction.addItem("RobertsFilter")
+        self.ui.boxFunction.addItem("GaussianFilter")
 
         # connect buttons
         self.ui.buttonLoadImage.clicked.connect(self.loadImagePressed)
