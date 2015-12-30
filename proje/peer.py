@@ -44,6 +44,14 @@ class serverReadThread (threading.Thread):
             self.socket.send("BUBYE")
             del connect_point_list[(self.ip, self.port)]
 
+        elif protocol == "FUNLS":
+            if(connect_point_list.has_key((self.ip, self.port))):
+                self.socket.send("FUNLI BEGIN")
+                self.socket.send(filtering_functions)
+                self.socket.send("FUNLI END")
+            else:
+                self.socket.send("REGER")
+
         else:
             self.socket.send("CMDER")
 
