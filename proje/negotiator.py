@@ -7,10 +7,9 @@ import sys
 connect_point_list = {}
 
 class serverReadThread (threading.Thread):
-    def __init__(self, socket, queue, connect_point_list, ip, port):
+    def __init__(self, socket, connect_point_list, ip, port):
         threading.Thread.__init__(self)
         self.socket = socket
-        self.queue = queue
         self.connect_point_list = connect_point_list
         self.ip = ip
         self.port = port
@@ -52,6 +51,33 @@ class serverReadThread (threading.Thread):
         data = self.socket.recv(1024)
         self.parser(data)
 
+class clientThread (threading.Thread):
+    def __init__(self, socket, connect_point_list, ip, port):
+        threading.Thread.__init__(self)
+        self.socket = socket
+        self.connect_point_list = connect_point_list
+        self.ip = ip
+        self.port = port
+
+    def parser(self, data):
+        data = data.strip()
+        protocol = data[0:5]
+
+        if protocol == "HELLO":
+           self.socket.send("SALUT")
+
+        elif protocol == "CLOSE":
+            self.socket.send("BUBYE")
+            del connect_point_list[(self.ip, self.port)]
+
+        else:
+            self.socket.send("CMDER")
+
+    def run(self):
+        print "Starting negotiator's client thread"
+        data = self.socket.recv(1024)
+        self.parser(data)
+
 
 host = "127.0.0.1"
 port = 12345
@@ -68,3 +94,16 @@ print "Soket bind basarili"
 
 s.listen(10)
 print "Soket dinlemede"
+
+while 1:
+    conn, addr = s.accept()
+    print "Baglanildi " + addr[0] + ":" + str(addr[1])
+    try:
+        server = serverReadThread(s,connect_point_list,host,port)
+        server.start()
+        client = clientThread(s,connect_point_list,host,port)
+        client.start()
+    except:
+        sys.exit()
+
+s.close()
