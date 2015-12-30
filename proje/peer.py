@@ -52,6 +52,16 @@ class serverReadThread (threading.Thread):
             else:
                 self.socket.send("REGER")
 
+        elif protocol == "FUNRQ":
+            parameter = data[6:].strip()
+            if(connect_point_list.has_key((self.ip, self.port))):
+                if(parameter in filtering_functions):
+                    self.socket.send("FUNYS")
+                else:
+                    self.socket.send("FUNNO")
+            else:
+                self.socket.send("REGER")
+
         else:
             self.socket.send("CMDER")
 
