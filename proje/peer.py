@@ -77,6 +77,19 @@ class serverReadThread (threading.Thread):
             else:
                 self.socket.send("REGER")
 
+        elif protocol == "PATCH":
+            parameter = (data[6:].strip()).split(":")
+            md5sum = parameter[0]
+            num = parameter[1]
+            pdata = parameter[2]
+            if(connect_point_list.has_key((self.ip, self.port))):
+                if(parameter in filtering_functions):
+                    self.socket.send("PATYS")
+                else:
+                    self.socket.send("PATNO")
+            else:
+                self.socket.send("REGER")
+
         else:
             self.socket.send("CMDER")
 
