@@ -2,17 +2,16 @@ import threading
 import Queue
 import socket
 
-
 class ReadThread (threading.Thread):
-    def __init__(self, name, cSocket, address, logQueue):
-    threading.Thread.__init__(self)
-    self.nickname=None
-    self.name = name
-    self.cSocket = cSocket
-    self.address = address
-    self.lQueue = logQueue
-    self.fihrist = fihrist
-    self.tQueue = threadQueue
+    def __init__(self, name, cSocket, address, lQueue, tQueue, fihrist):
+        threading.Thread.__init__(self)
+        self.nickname=None
+        self.name = name
+        self.cSocket = cSocket
+        self.address = address
+        self.lQueue = lQueue
+        self.tQueue = tQueue
+        self.fihrist = fihrist
 
     def csend(self,data):
         self.cSocket.sendall(data)
@@ -25,46 +24,34 @@ class ReadThread (threading.Thread):
         if not self.nickname and not protocol == "USR":
             response="ERL"
             self.csend(response)
+            return 1
 
-        return 1
-        # data sekli bozuksa
-        if ...
-            response = "ERR"
-            self.csend(response)
-            return 0
         if protocol == "USR":
             nickname = parameter
-        if ...
-            # kullanici yoksa
-            response = "HEL " + nickname
-            ...
-            ...
-            # fihristi guncelle
-            self.fihrist.update(...)
-            ...
-            ...
-            self.lQueue.put(self.nickname + " has joined.")
-            return 0
-        else:
-            # kullanici reddedilecek
-            response = "REJ " + nickname
-            self.csend(response)
-            ....
-            # baglantiyi kapat
-            self.csoc.close()
-            return 1
+            if(not self.fihrist.has_key(nickname)):
+                # kullanici yoksa
+                response = "HEL " + nickname
+                self.csend(response)
+                # fihristi guncelle
+                self.fihrist[nickname] = self.tQueue
+                self.lQueue.put(self.nickname + " has joined.")
+                return 0
+            else:
+                # kullanici reddedilecek
+                response = "REJ " + nickname
+                self.csend(response)
+                # baglantiyi kapat
+                self.csoc.close()
+                return 1
         elif protocol == "QUI":
             response = "BYE " + self.nickname
-            ...
-            ...
+            self.csend(response)
             # fihristten sil
-            ...
-            ...
+            del self.fihrist[self.nickname]
             # log gonder
-            ...
+            self.lQueue.put(self.nickname + " has left.")
             # baglantiyi sil
-            ...
-            ...
+            self.csoc.close()
         elif protocol == "LSQ":
             response = "LSA "
             ...
@@ -87,14 +74,12 @@ class ReadThread (threading.Thread):
                 self.fihrist[to_nickname].put(queue_message)
                 response = "MOK"
             self.csend(response)
-        else:
-        # bir seye uymadiysa protokol hatasi verilecek
-            response = "ERR"
-            ...
-            ...
-            ...
 
-    
+        # data sekli bozuksa
+        else:
+            response = "ERR"
+            self.csend(response)
+            return 0
 
 class WriteThread (threading.Thread):
     def __init__(self, name, cSocket, address, threadQueue, logQueue ):
