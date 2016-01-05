@@ -103,7 +103,7 @@ class ClientDialog(QDialog):
             elif data[1:5] == "quit":
                 self.threadQueue.put("QUI")
             elif data[1:4] == "msg":
-                self.threadQueue.put("MSG "+data[6:])
+                self.threadQueue.put("MSG "+data[5:])
             else:
                 self.cprint("Local: Command Error.")
         else:
