@@ -85,6 +85,14 @@ class ReadThread (threading.Thread):
             self.csend(response)
             return 0
 
+    def run(self):
+        self.lQueue.put("Starting " + self.name)
+        while True:
+            data = self.cSocket.recv(1024)
+            response = self.parser(data)
+            self.tQueue.put(response)
+        self.lQueue.put("Exiting " + self.name)
+
 class WriteThread (threading.Thread):
     def __init__(self, name, cSocket, address, threadQueue, logQueue ):
         threading.Thread.__init__(self)
@@ -96,24 +104,24 @@ class WriteThread (threading.Thread):
 
     def run(self):
         self.lQueue.put("Starting " + self.name)
-    while True:
-        ...
-        ...
-        ...
-        # burasi kuyrukta sirasi gelen mesajlari
-        # gondermek icin kullanilacak
-        if self.threadQueue.qsize() > 0:
-            queue_message = self.threadQueue.get()
-            # gonderilen ozel mesajsa
-        if ...
-            message_to_send = "MSG " + ...
-        # genel mesajsa
-        elif queue_message[1]:
-            message_to_send = "SAY " + ...
-        # hicbiri degilse sistem mesajidir
-        else:
-            message_to_send = "SYS " + ...
+        while True:
             ...
             ...
             ...
-    self.lQueue.put("Exiting " + self.name)
+            # burasi kuyrukta sirasi gelen mesajlari
+            # gondermek icin kullanilacak
+            if self.threadQueue.qsize() > 0:
+                queue_message = self.threadQueue.get()
+                # gonderilen ozel mesajsa
+            if ...
+                message_to_send = "MSG " + ...
+            # genel mesajsa
+            elif queue_message[1]:
+                message_to_send = "SAY " + ...
+            # hicbiri degilse sistem mesajidir
+            else:
+                message_to_send = "SYS " + ...
+                ...
+                ...
+                ...
+        self.lQueue.put("Exiting " + self.name)
