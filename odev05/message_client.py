@@ -26,21 +26,21 @@ class ReadThread (threading.Thread):
         rest = data[4:]
 
         if data[0:3] == "BYE":
-            ...
+            self.app.cprint('Disconnected from server')
         if data[0:3] == "ERL":
-            ...
+            self.app.cprint('Non registered user detected')
         if data[0:3] == "HEL":
-            ...
+            self.app.cprint('Connected to server')
         if data[0:3] == "REJ":
-            ...
+            self.app.cprint('Duplicate nickname, choose another one')
         if data[0:3] == "MNO":
-            ...
-        if data[0:3] == "MSG":
-            ...
-        if data[0:3] == "SAY":
-            ...
-        if data[0:3] == "SYS":
-            ...
+            self.app.cprint('Couldnt find the user to send the message')
+        if data[0:3] == "MOK":
+            self.app.cprint('Message delivered to specific user')
+        if data[0:3] == "SOK":
+            self.app.cprint('Message delivered to all users')
+        if data[0:3] == "TOC":
+            self.app.cprint('Connection alive')
         if data[0:3] == "LSA":
             splitted = rest.split(" ")
             msg = "<Server>: Registered nicks: "
