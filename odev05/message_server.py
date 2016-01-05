@@ -19,7 +19,6 @@ class ReadThread (threading.Thread):
     def parser(self, data):
         data = data.strip()
         protocol = data[0:3]
-        parameter = data[4:].strip()
 
         if not self.nickname and not protocol == "USR":
             response="ERL"
@@ -27,7 +26,7 @@ class ReadThread (threading.Thread):
             return 1
 
         if protocol == "USR":
-            nickname = parameter
+            nickname = data[4:].strip()
             if(not self.fihrist.has_key(nickname)):
                 # kullanici yoksa
                 response = "HEL " + nickname
@@ -43,6 +42,7 @@ class ReadThread (threading.Thread):
                 # baglantiyi kapat
                 self.csoc.close()
                 return 1
+
         elif protocol == "QUI":
             response = "BYE " + self.nickname
             self.csend(response)
@@ -52,20 +52,24 @@ class ReadThread (threading.Thread):
             self.lQueue.put(self.nickname + " has left.")
             # baglantiyi sil
             self.csoc.close()
+
         elif protocol == "LSQ":
             response = "LSA "
-            ...
-            ...
+            userList = ""
+            for nickname in self.fihrist.keys():
+                userList += "," + nickname
+            self.csend(response + userList[1:])
+
         elif protocol == "TIC":
-            ...
-            ...
+            self.csend("TOC")
+
         elif protocol == "SAY":
-            ...
-            ...
+            message = data[4:].strip()
+            self.csend(message)
         elif protocol == "MSG":
-            ...
-            ...
-            ...
+            userMessage = data[3:].strip().split(':')
+            to_nickname = userMessage[0]
+            message = userMessage[1]
             if not to_nickname in self.fihrist.keys():
                 response = "MNO"
             else:
