@@ -92,16 +92,17 @@ class ClientDialog(QDialog):
         self.channel.append(data)
 
     def outgoing_parser(self, data):
-        data=self.sender.text()
+        data = self.sender.text()
         if len(data) == 0:
             return
         if data[0] == "/":
-            command=data[1:5]
-            if command == "list":
+            if data[1:5] == "nick":
+                self.threadQueue.put("USR "+data[6:])
+            if data[1:5] == "list":
                 self.threadQueue.put("LSQ")
-            elif command == "quit":
+            elif data[1:5] == "quit":
                 self.threadQueue.put("QUI")
-            elif command == "msg":
+            elif data[1:4] == "msg":
                 self.threadQueue.put("MSG "+data[6:])
             else:
                 self.cprint("Local: Command Error.")
