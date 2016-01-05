@@ -67,7 +67,7 @@ class ReadThread (threading.Thread):
             message = data[4:].strip()
             self.csend(message)
         elif protocol == "MSG":
-            userMessage = data[3:].strip().split(':')
+            userMessage = data[4:].strip().split(':')
             to_nickname = userMessage[0]
             message = userMessage[1]
             if not to_nickname in self.fihrist.keys():
