@@ -114,10 +114,10 @@ class ClientDialog(QDialog):
         self.qt_app.exec_()
 
 s = socket.socket()
-host = ...
-port = ...
+host = socket.gethostname()
+port = 12345
 s.connect((host,port))
-sendQueue = ...
+sendQueue = Queue.Queue()
 app = ClientDialog(sendQueue)
 # start threads
 rt = ReadThread("ReadThread", s, sendQueue, app)
