@@ -1,6 +1,7 @@
 import threading
 import Queue
 import socket
+import sys
 
 class ReadThread (threading.Thread):
     def __init__(self, name, cSocket, address, lQueue, tQueue, fihrist):
@@ -94,13 +95,13 @@ class ReadThread (threading.Thread):
         self.lQueue.put("Exiting " + self.name)
 
 class WriteThread (threading.Thread):
-    def __init__(self, name, cSocket, address, threadQueue, logQueue ):
+    def __init__(self, name, cSocket, address, tQueue, lQueue):
         threading.Thread.__init__(self)
         self.name = name
         self.cSocket = cSocket
         self.address = address
-        self.lQueue = logQueue
-        self.tQueue = threadQueue
+        self.lQueue = lQueue
+        self.tQueue = tQueue
 
     def run(self):
         self.lQueue.put("Starting " + self.name)
@@ -120,3 +121,37 @@ class WriteThread (threading.Thread):
                 message_to_send = "SYS " + queue_message[2]
             self.cSocket.sendall(message_to_send)
         self.lQueue.put("Exiting " + self.name)
+
+host = ''
+port = 12345
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+tQueue = Queue.Queue()
+lQueue = Queue.Queue()
+fihrist = {}
+print "Soket olusturuldu"
+
+try:
+    s.bind((host, port))
+except socket.error as msg:
+    print "Bind basarisiz. Hata kodu: " + str(msg[0]) + " Message " + msg[1]
+    sys.exit()
+
+print "Soket bind basarili"
+
+s.listen(10)
+print "Soket dinlemede"
+
+
+while 1:
+
+    conn, addr = s.accept()
+    print "Baglanildi " + addr[0] + ":" + str(addr[1])
+    try:
+        readThread = ReadThread('ReadThread',conn,addr,tQueue,lQueue,fihrist)
+        writeThread = WriteThread('WriteThread',conn,addr,tQueue,lQueue)
+        readThread.start()
+        writeThread.start()
+    except:
+        sys.exit()
+
+s.close()
