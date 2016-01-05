@@ -52,6 +52,7 @@ class ReadThread (threading.Thread):
     def run(self):
         while True:
             data = self.csoc.recv(1024)
+            self.incoming_parser(data)
 
 class WriteThread (threading.Thread):
     def __init__(self,  name, csoc, threadQueue):
@@ -95,13 +96,13 @@ class ClientDialog(QDialog):
         if len(data) == 0:
             return
         if data[0] == "/":
-
+            command=data[1:5]
             if command == "list":
-
+                self.threadQueue.put("LSQ")
             elif command == "quit":
-
+                self.threadQueue.put("QUI")
             elif command == "msg":
-
+                self.threadQueue.put("MSG "+data[6:])
             else:
                 self.cprint("Local: Command Error.")
         else:
